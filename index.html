@@ -18,7 +18,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between text-slate-800">
 
-    <main class="max-w-3xl w-full mx-auto p-4 sm:p-6 my-auto">
+    <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 my-auto">
         
         <!-- User View -->
         <div id="userView" class="max-w-md mx-auto bg-white capsule-card shadow-xl border border-slate-100 p-8 text-center space-y-6">
@@ -65,7 +65,7 @@
                 </button>
             </div>
             
-            <!-- Tab 1: Add Book & Select Department -->
+            <!-- Tab 1: Add Book Form -->
             <div id="sectionAdd" class="space-y-4">
                 <form id="addBookForm" class="space-y-4 text-left bg-slate-50 p-6 sub-card border border-slate-200">
                     <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide mb-2"><i class="fa-solid fa-plus-circle text-blue-600"></i> Add New Book Link</h3>
@@ -111,15 +111,16 @@
             <!-- Tab 2: Saved Logs & List Table -->
             <div id="sectionList" class="hidden space-y-3">
                 <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide"><i class="fa-solid fa-list-check text-blue-600"></i> Saved Books Logs</h3>
-                <div class="overflow-x-auto max-h-72 border border-slate-200 sub-card bg-white">
+                <div class="overflow-x-auto max-h-80 border border-slate-200 sub-card bg-white">
                     <table class="w-full text-left border-collapse text-xs">
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                <th class="p-3 font-semibold text-center">S.No</th>
                                 <th class="p-3 font-semibold">Department</th>
                                 <th class="p-3 font-semibold">Code</th>
                                 <th class="p-3 font-semibold">Book Name</th>
                                 <th class="p-3 font-semibold">Link</th>
-                                <th class="p-3 font-semibold text-center">Action</th>
+                                <th class="p-3 font-semibold text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="booksTableBody" class="divide-y divide-slate-100">
@@ -132,6 +133,45 @@
         </div>
 
     </main>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white capsule-card max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 text-left">
+            <h3 class="text-lg font-bold text-slate-900 border-b pb-2"><i class="fa-solid fa-pen-to-square text-blue-600"></i> Edit Book Details</h3>
+            <input type="hidden" id="editDocId">
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">DEPARTMENT</label>
+                    <select id="editBookDept" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-[12px] outline-none">
+                        <option value="USOOLUDDIN">USOOLUDDIN</option>
+                        <option value="SHARIA ISLAMIYYA">SHARIA ISLAMIYYA</option>
+                        <option value="THASAWUF, AQEEDA & PHILOSOPHY">THASAWUF, AQEEDA & PHILOSOPHY</option>
+                        <option value="LINGUIDTICS & LITERATURE">LINGUIDTICS & LITERATURE</option>
+                        <option value="LANGUAGES">LANGUAGES</option>
+                        <option value="CONTEMPORARY STUDIES">CONTEMPORARY STUDIES</option>
+                        <option value="HISTORY & CULTURE">HISTORY & CULTURE</option>
+                        <option value="ARTS & SOCIAL SCIENCE">ARTS & SOCIAL SCIENCE</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">BOOK NAME</label>
+                    <input type="text" id="editBookName" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-[12px] outline-none font-medium">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">UNIQUE BOOK CODE</label>
+                    <input type="text" id="editBookCode" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-[12px] outline-none uppercase font-semibold">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1">DRIVE / APP LINK</label>
+                    <input type="url" id="editBookLink" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-[12px] outline-none">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="updateBook()" class="flex-1 py-2.5 theme-gradient text-white font-semibold pill-btn text-xs">Update</button>
+                <button onclick="closeEditModal()" class="flex-1 py-2.5 bg-slate-200 text-slate-700 font-semibold pill-btn text-xs">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Custom Modal -->
     <div id="customModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -149,7 +189,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
         const firebaseConfig = {
@@ -299,27 +339,32 @@
         });
 
         async function loadAdminBooks() {
-            booksTableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin"></i> Loading books...</td></tr>';
+            booksTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin"></i> Loading books...</td></tr>';
             try {
                 const querySnapshot = await getDocs(collection(db, "books"));
                 booksTableBody.innerHTML = '';
                 if (querySnapshot.empty) {
-                    booksTableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">No books found in database.</td></tr>';
+                    booksTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">No books found in database.</td></tr>';
                     return;
                 }
+                let index = 1;
                 querySnapshot.forEach((docSnap) => {
                     const book = docSnap.data();
                     const docId = docSnap.id;
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
                     tr.innerHTML = `
+                        <td class="p-3 font-bold text-center text-slate-500">${index++}</td>
                         <td class="p-3 font-semibold text-slate-800">${book.department || 'N/A'}</td>
                         <td class="p-3 font-bold text-slate-900">${book.bookCode}</td>
                         <td class="p-3 font-medium text-slate-700">${book.bookName}</td>
-                        <td class="p-3 text-blue-600 truncate max-w-[150px]"><a href="${book.bookLink}" target="_blank" class="hover:underline">${book.bookLink}</a></td>
-                        <td class="p-3 text-center">
-                            <button onclick="deleteBook('${docId}')" class="w-8 h-8 bg-rose-50 text-[#fc5c65] hover:bg-rose-100 rounded-full inline-flex items-center justify-center transition" title="Delete Book">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
+                        <td class="p-3 text-blue-600 truncate max-w-[130px]"><a href="${book.bookLink}" target="_blank" class="hover:underline">${book.bookLink}</a></td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="openEditModal('${docId}', '${book.department || ''}', '${book.bookName.replace(/'/g, "\\'")}', '${book.bookCode}', '${book.bookLink}')" class="w-7 h-7 bg-blue-50 text-[#4b7bec] hover:bg-blue-100 rounded-full inline-flex items-center justify-center transition" title="Edit Book">
+                                <i class="fa-solid fa-pen text-[10px]"></i>
+                            </button>
+                            <button onclick="deleteBook('${docId}')" class="w-7 h-7 bg-rose-50 text-[#fc5c65] hover:bg-rose-100 rounded-full inline-flex items-center justify-center transition" title="Delete Book">
+                                <i class="fa-solid fa-trash-can text-[10px]"></i>
                             </button>
                         </td>
                     `;
@@ -327,7 +372,48 @@
                 });
             } catch (err) {
                 console.error(err);
-                booksTableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-rose-500">Failed to load books.</td></tr>';
+                booksTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-rose-500">Failed to load books.</td></tr>';
+            }
+        }
+
+        window.openEditModal = function(id, dept, name, code, link) {
+            document.getElementById('editDocId').value = id;
+            document.getElementById('editBookDept').value = dept;
+            document.getElementById('editBookName').value = name;
+            document.getElementById('editBookCode').value = code;
+            document.getElementById('editBookLink').value = link;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        window.closeEditModal = function() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        window.updateBook = async function() {
+            const id = document.getElementById('editDocId').value;
+            const dept = document.getElementById('editBookDept').value;
+            const name = document.getElementById('editBookName').value;
+            const code = document.getElementById('editBookCode').value.trim().toUpperCase();
+            const link = document.getElementById('editBookLink').value;
+
+            if (!name || !code || !link) {
+                showModal('error', 'Validation Error', 'All fields are required.');
+                return;
+            }
+
+            try {
+                await updateDoc(doc(db, "books", id), {
+                    department: dept,
+                    bookName: name,
+                    bookCode: code,
+                    bookLink: link
+                });
+                closeEditModal();
+                showModal('success', 'Updated', 'Book details updated successfully with confirmation.');
+                loadAdminBooks();
+            } catch (err) {
+                console.error(err);
+                showModal('error', 'Error', 'Failed to update book details.');
             }
         }
 
@@ -366,3 +452,4 @@
     </script>
 </body>
 </html>
+```[cite: 25]
