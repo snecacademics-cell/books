@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Book Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400,500,600,700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="w-full py-4 px-8 bg-white shadow-sm border-b border-gray-100 flex justify-between items-center">
+        <h1 class="text-lg font-bold text-gray-800">⚙️ Admin Dashboard</h1>
+        <a href="index.html" class="text-xs font-medium text-indigo-600 hover:underline">← ബാക്ക് to Portal</a>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-lg w-full mx-auto p-6 my-auto">
+        
+        <!-- Login Box -->
+        <div id="loginCard" class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6">
+            <h2 class="text-xl font-bold text-gray-800 text-center">അഡ്മിൻ ലോഗിൻ</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Username</label>
+                    <input type="text" id="username" required placeholder="admin"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Password</label>
+                    <input type="password" id="password" required placeholder="••••••••"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none">
+                </div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition">
+                    ലോഗിൻ ചെയ്യുക
+                </button>
+            </form>
+            <div id="loginError" class="hidden text-sm text-red-500 bg-red-50 p-3 rounded-lg text-center"></div>
+        </div>
+
+        <!-- Add Book Box (Hidden Initially) -->
+        <div id="dashboardCard" class="hidden bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6">
+            <div class="flex justify-between items-center border-b pb-4">
+                <h2 class="text-xl font-bold text-gray-800">പുതിയ പുസ്തകം ചേർക്കുക</h2>
+                <button id="logoutBtn" class="text-xs text-red-600 font-medium hover:underline">ലോഗ് ഔട്ട്</button>
+            </div>
+            
+            <form id="addBookForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">പുസ്തകത്തിന്റെ പേര്</label>
+                    <input type="text" id="bookName" required placeholder="ഉദാ: അറബിക് ഗ്രാമർ"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">പുസ്തകത്തിന്റെ കോഡ് (Unique Code)</label>
+                    <input type="text" id="newBookCode" required placeholder="ഉദാ: BATCH1-01"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none uppercase">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">ലിങ്ക് (Google Drive / App Link)</label>
+                    <input type="url" id="bookLink" required placeholder="https://..."
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none">
+                </div>
+                <button type="submit" id="saveBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition">
+                    സേവ് ചെയ്യുക
+                </button>
+            </form>
+            <div id="successMsg" class="hidden text-sm text-green-600 bg-green-50 p-3 rounded-lg text-center"></div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-6 text-xs text-gray-400">
+        &copy; 2026 Samastha National Education Council
+    </footer>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Elements
+        const loginCard = document.getElementById('loginCard');
+        const dashboardCard = document.getElementById('dashboardCard');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const addBookForm = document.getElementById('addBookForm');
+        const successMsg = document.getElementById('successMsg');
+
+        // Credentials
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "admin_4321";
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                loginCard.classList.add('hidden');
+                dashboardCard.classList.remove('hidden');
+                loginError.classList.add('hidden');
+            } else {
+                loginError.innerText = "യൂസർനെയിമോ പാസ്‌വേഡോ തെറ്റാണ്!";
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            dashboardCard.classList.add('hidden');
+            loginCard.classList.remove('hidden');
+            loginForm.reset();
+        });
+
+        addBookForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('bookName').value;
+            const code = document.getElementById('newBookCode').value.trim().toUpperCase();
+            const link = document.getElementById('bookLink').value;
+            const saveBtn = document.getElementById('saveBtn');
+
+            saveBtn.disabled = true;
+            saveBtn.innerText = "സേവ് ചെയ്യുന്നു...";
+
+            try {
+                await addDoc(collection(db, "books"), {
+                    bookName: name,
+                    bookCode: code,
+                    bookLink: link,
+                    createdAt: new Date()
+                });
+
+                successMsg.innerText = "പുസ്തകം വിജയകരമായി സേവ് ചെയ്തു!";
+                successMsg.classList.remove('hidden');
+                addBookForm.reset();
+                
+                setTimeout(() => {
+                    successMsg.classList.add('hidden');
+                }, 3000);
+            } catch (err) {
+                console.error(err);
+                alert("എറർ സംഭവിച്ചു!");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "സേവ് ചെയ്യുക";
+            }
+        });
+    </script>
+</body>
+</html>
