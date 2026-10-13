@@ -40,7 +40,7 @@
             <div id="loginError" class="hidden text-sm text-red-500 bg-red-50 p-3 rounded-lg text-center"></div>
         </div>
 
-        <!-- Add Book Box (Hidden Initially) -->
+        <!-- Add Book Box -->
         <div id="dashboardCard" class="hidden bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6">
             <div class="flex justify-between items-center border-b pb-4">
                 <h2 class="text-xl font-bold text-gray-800">പുതിയ പുസ്തകം ചേർക്കുക</h2>
@@ -80,20 +80,22 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDt3iF9qoRPm-ZzQtb8okSYQScHDorFJrw",
+            authDomain: "snecbooks.firebaseapp.com",
+            projectId: "snecbooks",
+            storageBucket: "snecbooks.firebasestorage.app",
+            messagingSenderId: "179391454663",
+            appId: "1:179391454663:web:3fb8870eba9bd0290e0de2",
+            measurementId: "G-WVVPS7LF22"
         };
 
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // Elements
         const loginCard = document.getElementById('loginCard');
         const dashboardCard = document.getElementById('dashboardCard');
         const loginForm = document.getElementById('loginForm');
@@ -102,7 +104,6 @@
         const addBookForm = document.getElementById('addBookForm');
         const successMsg = document.getElementById('successMsg');
 
-        // Credentials
         const ADMIN_USER = "admin";
         const ADMIN_PASS = "admin_4321";
 
