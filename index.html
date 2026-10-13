@@ -193,7 +193,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
         const firebaseConfig = {
@@ -322,7 +322,6 @@
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
             try {
-                // Check if code already exists
                 const qCheck = query(collection(db, "books"), where("bookCode", "==", code));
                 const existingDocs = await getDocs(qCheck);
 
@@ -356,24 +355,27 @@
         async function loadAdminBooks() {
             booksTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin"></i> Loading books...</td></tr>';
             try {
-                const querySnapshot = await getDocs(collection(db, "books"));
+                const q = query(collection(db, "books"), orderBy("department", "asc"));
+                const querySnapshot = await getDocs(q);
                 booksTableBody.innerHTML = '';
+                
                 if (querySnapshot.empty) {
                     booksTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">No books found in database.</td></tr>';
                     return;
                 }
+
                 let index = 1;
                 let lastDept = '';
+                
                 querySnapshot.forEach((docSnap) => {
                     const book = docSnap.data();
                     const docId = docSnap.id;
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
                     
-                    // Group/hide department name if it's the same as previous row for cleaner look
                     let deptDisplay = book.department || 'N/A';
                     if (deptDisplay === lastDept) {
-                        deptDisplay = '<span class="text-slate-300">↳</span>';
+                        deptDisplay = '<span class="text-slate-300 ml-2">↳</span>';
                     } else {
                         lastDept = book.department || 'N/A';
                     }
@@ -397,7 +399,7 @@
                 });
             } catch (err) {
                 console.error(err);
-                booksTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-rose-500">Failed to load books.</td></tr>';
+                booksTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-rose-500">Failed to load books. (Note: Ensure Firestore Index is created if prompted in console)</td></tr>';
             }
         }
 
@@ -443,7 +445,7 @@
                     bookLink: link
                 });
                 closeEditModal();
-                showModal('success', 'Updated', 'Book details updated successfully with confirmation.');
+                showModal('success', 'Updated', 'Book details updated successfully.');
                 loadAdminBooks();
             } catch (err) {
                 console.error(err);
