@@ -160,8 +160,14 @@
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Searching...';
 
             try {
+                const timeout = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout')), 6000)
+                );
+
                 const q = query(collection(db, "books"), where("bookCode", "==", code));
-                const querySnapshot = await getDocs(q);
+                const fetchPromise = getDocs(q);
+
+                const querySnapshot = await Promise.race([fetchPromise, timeout]);
 
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((doc) => {
@@ -169,13 +175,13 @@
                         window.location.href = bookData.bookLink;
                     });
                 } else {
-                    showModal('error', 'Book Not Found', 'No book exists with this code. Please check and try again.');
+                    showModal('error', 'Book Not Found', 'No book exists with code: ' + code);
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Submit';
                 }
             } catch (error) {
                 console.error("Error: ", error);
-                showModal('error', 'System Error', 'An unexpected error occurred. Please try again later.');
+                showModal('error', 'Connection Error', 'Failed to search. Please check your internet or Firebase Rules.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Submit';
             }
@@ -200,18 +206,24 @@
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
             try {
-                await addDoc(collection(db, "books"), {
+                const timeout = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout')), 6000)
+                );
+
+                const savePromise = addDoc(collection(db, "books"), {
                     bookName: name,
                     bookCode: code,
                     bookLink: link,
                     createdAt: new Date()
                 });
 
+                await Promise.race([savePromise, timeout]);
+
                 showModal('success', 'Success!', 'Book has been successfully added to the database.');
                 addBookForm.reset();
             } catch (err) {
                 console.error(err);
-                showModal('error', 'Database Error', 'Failed to save the book. Please try again.');
+                showModal('error', 'Database Error', 'Saving took too long. Check Firebase Rules.');
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Book';
