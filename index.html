@@ -110,7 +110,11 @@
 
             <!-- Tab 2: Saved Logs & List Table -->
             <div id="sectionList" class="hidden space-y-3">
-                <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide"><i class="fa-solid fa-list-check text-blue-600"></i> Saved Books Logs</h3>
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide"><i class="fa-solid fa-list-check text-blue-600"></i> Saved Books Logs</h3>
+                    <input type="text" id="tableSearch" placeholder="Search saved books..." onkeyup="filterTable()"
+                        class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-[15px] text-xs outline-none w-full sm:w-64">
+                </div>
                 <div class="overflow-x-auto max-h-80 border border-slate-200 sub-card bg-white">
                     <table class="w-full text-left border-collapse text-xs">
                         <thead>
@@ -318,6 +322,17 @@
             saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
             try {
+                // Check if code already exists
+                const qCheck = query(collection(db, "books"), where("bookCode", "==", code));
+                const existingDocs = await getDocs(qCheck);
+
+                if (!existingDocs.empty) {
+                    showModal('error', 'Duplicate Code', 'This Book Code already exists in the database. Please use a unique code.');
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Book';
+                    return;
+                }
+
                 await addDoc(collection(db, "books"), {
                     department: dept,
                     bookName: name,
@@ -348,14 +363,24 @@
                     return;
                 }
                 let index = 1;
+                let lastDept = '';
                 querySnapshot.forEach((docSnap) => {
                     const book = docSnap.data();
                     const docId = docSnap.id;
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                    
+                    // Group/hide department name if it's the same as previous row for cleaner look
+                    let deptDisplay = book.department || 'N/A';
+                    if (deptDisplay === lastDept) {
+                        deptDisplay = '<span class="text-slate-300">↳</span>';
+                    } else {
+                        lastDept = book.department || 'N/A';
+                    }
+
                     tr.innerHTML = `
                         <td class="p-3 font-bold text-center text-slate-500">${index++}</td>
-                        <td class="p-3 font-semibold text-slate-800">${book.department || 'N/A'}</td>
+                        <td class="p-3 font-semibold text-slate-800">${deptDisplay}</td>
                         <td class="p-3 font-bold text-slate-900">${book.bookCode}</td>
                         <td class="p-3 font-medium text-slate-700">${book.bookName}</td>
                         <td class="p-3 text-blue-600 truncate max-w-[130px]"><a href="${book.bookLink}" target="_blank" class="hover:underline">${book.bookLink}</a></td>
@@ -373,6 +398,15 @@
             } catch (err) {
                 console.error(err);
                 booksTableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-rose-500">Failed to load books.</td></tr>';
+            }
+        }
+
+        window.filterTable = function() {
+            const input = document.getElementById('tableSearch').value.toLowerCase();
+            const rows = booksTableBody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const text = rows[i].textContent.toLowerCase();
+                rows[i].style.display = text.includes(input) ? '' : 'none';
             }
         }
 
@@ -452,4 +486,3 @@
     </script>
 </body>
 </html>
-```[cite: 25]
