@@ -4,79 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Book Portal</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400,500,600,700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <!-- Font Awesome 6.4.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; }
+        .theme-gradient { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .sidebar-dark { background-color: #1e1e2f; color: #cbd5e1; }
+        .pill-btn { border-radius: 50px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .pill-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(30, 60, 114, 0.15); }
+        .capsule-card { border-radius: 30px; }
+        .sub-card { border-radius: 20px; }
+        .panel-card { border-radius: 15px; }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
 
     <!-- Header -->
-    <header class="w-full py-4 px-8 bg-white shadow-sm border-b border-gray-100 flex justify-between items-center">
-        <h1 class="text-lg font-bold text-gray-800">⚙️ Admin Dashboard</h1>
-        <a href="index.html" class="text-xs font-medium text-indigo-600 hover:underline">← ബാക്ക് to Portal</a>
+    <header class="w-full py-4 px-8 bg-white shadow-sm border-b border-slate-200 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 theme-gradient text-white rounded-full flex items-center justify-center shadow-md text-sm">
+                <i class="fa-solid fa-gear"></i>
+            </div>
+            <h1 class="text-base font-bold text-slate-800">Admin Dashboard</h1>
+        </div>
+        <a href="index.html" class="text-xs font-semibold text-[#4b7bec] hover:underline flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left"></i> Back to Portal
+        </a>
     </header>
 
     <!-- Main Container -->
     <main class="max-w-lg w-full mx-auto p-6 my-auto">
         
         <!-- Login Box -->
-        <div id="loginCard" class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6">
-            <h2 class="text-xl font-bold text-gray-800 text-center">അഡ്മിൻ ലോഗിൻ</h2>
+        <div id="loginCard" class="bg-white capsule-card shadow-xl border border-slate-100 p-8 space-y-6">
+            <div class="w-14 h-14 bg-blue-50 text-[#4b7bec] rounded-full flex items-center justify-center mx-auto text-xl shadow-inner">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 text-center">Admin Login</h2>
+            
             <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Username</label>
-                    <input type="text" id="username" required placeholder="admin"
-                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1 ml-2">USERNAME</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="username" required placeholder="admin" data-next="password"
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-[20px] focus:ring-2 focus:ring-[#4b7bec] focus:bg-white outline-none text-sm font-medium">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Password</label>
-                    <input type="password" id="password" required placeholder="••••••••"
-                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1 ml-2">PASSWORD</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+                        <input type="password" id="password" required placeholder="••••••••" data-next="loginBtn"
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-[20px] focus:ring-2 focus:ring-[#4b7bec] focus:bg-white outline-none text-sm font-medium">
+                    </div>
                 </div>
-                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition">
-                    ലോഗിൻ ചെയ്യുക
+                <button type="submit" id="loginBtn" class="w-full py-3.5 theme-gradient text-white font-semibold pill-btn shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Login
                 </button>
             </form>
-            <div id="loginError" class="hidden text-sm text-red-500 bg-red-50 p-3 rounded-lg text-center"></div>
         </div>
 
-        <!-- Add Book Box -->
-        <div id="dashboardCard" class="hidden bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6">
-            <div class="flex justify-between items-center border-b pb-4">
-                <h2 class="text-xl font-bold text-gray-800">പുതിയ പുസ്തകം ചേർക്കുക</h2>
-                <button id="logoutBtn" class="text-xs text-red-600 font-medium hover:underline">ലോഗ് ഔട്ട്</button>
+        <!-- Add Book Box (Hidden Initially) -->
+        <div id="dashboardCard" class="hidden bg-white capsule-card shadow-xl border border-slate-100 p-8 space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-emerald-50 text-[#05c46b] rounded-full flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">Add New Book</h2>
+                </div>
+                <!-- Instant Logout Button -->
+                <button id="logoutBtn" class="text-xs text-[#fc5c65] font-semibold hover:bg-rose-50 px-3 py-1.5 rounded-full transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
             </div>
             
             <form id="addBookForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">പുസ്തകത്തിന്റെ പേര്</label>
-                    <input type="text" id="bookName" required placeholder="ഉദാ: അറബിക് ഗ്രാമർ"
-                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1 ml-2">BOOK NAME</label>
+                    <input type="text" id="bookName" required placeholder="e.g. Advanced Arabic Grammar" data-next="newBookCode"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[20px] focus:ring-2 focus:ring-[#4b7bec] focus:bg-white outline-none text-sm font-medium">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">പുസ്തകത്തിന്റെ കോഡ് (Unique Code)</label>
-                    <input type="text" id="newBookCode" required placeholder="ഉദാ: BATCH1-01"
-                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none uppercase">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1 ml-2">UNIQUE BOOK CODE</label>
+                    <input type="text" id="newBookCode" required placeholder="e.g. BATCH1-01" data-next="bookLink"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[20px] focus:ring-2 focus:ring-[#4b7bec] focus:bg-white outline-none uppercase text-sm font-semibold tracking-wider">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">ലിങ്ക് (Google Drive / App Link)</label>
-                    <input type="url" id="bookLink" required placeholder="https://..."
-                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1 ml-2">DRIVE / APP LINK</label>
+                    <input type="url" id="bookLink" required placeholder="https://..." data-next="saveBtn"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[20px] focus:ring-2 focus:ring-[#4b7bec] focus:bg-white outline-none text-sm font-medium">
                 </div>
-                <button type="submit" id="saveBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition">
-                    സേവ് ചെയ്യുക
+                <button type="submit" id="saveBtn" class="w-full py-3.5 theme-gradient text-white font-semibold pill-btn shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Save Book
                 </button>
             </form>
-            <div id="successMsg" class="hidden text-sm text-green-600 bg-green-50 p-3 rounded-lg text-center"></div>
         </div>
 
     </main>
 
-    <footer class="text-center py-6 text-xs text-gray-400">
-        &copy; 2026 Samastha National Education Council
+    <!-- Custom Modal Component -->
+    <div id="customModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white capsule-card max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border border-slate-100">
+            <div id="modalIcon" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto text-2xl"></div>
+            <h3 id="modalTitle" class="text-xl font-bold text-slate-900"></h3>
+            <p id="modalDesc" class="text-sm text-slate-500"></p>
+            <button onclick="closeModal()" class="w-full py-3 theme-gradient text-white font-semibold pill-btn">OK</button>
+        </div>
+    </div>
+
+    <footer class="text-center py-6 text-xs text-slate-400">
+        &copy; 2026 Samastha National Education Council. All rights reserved.
     </footer>
 
-    <!-- Firebase Script -->
+    <!-- Firebase Script & Authentication Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -99,35 +148,64 @@
         const loginCard = document.getElementById('loginCard');
         const dashboardCard = document.getElementById('dashboardCard');
         const loginForm = document.getElementById('loginForm');
-        const loginError = document.getElementById('loginError');
         const logoutBtn = document.getElementById('logoutBtn');
         const addBookForm = document.getElementById('addBookForm');
-        const successMsg = document.getElementById('successMsg');
 
         const ADMIN_USER = "admin";
         const ADMIN_PASS = "admin_4321";
 
+        // Enter-to-Tab Custom Navigation Support across inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const nextId = input.getAttribute('data-next');
+                    if (nextId) {
+                        const nextEl = document.getElementById(nextId);
+                        if (nextEl) nextEl.focus();
+                    }
+                }
+            });
+        });
+
+        // Session Persistence Check on Page Load
+        function checkSession() {
+            const isAuth = sessionStorage.getItem("snec_admin_auth");
+            if (isAuth === "true") {
+                loginCard.classList.add('hidden');
+                dashboardCard.classList.remove('hidden');
+            } else {
+                dashboardCard.classList.add('hidden');
+                loginCard.classList.remove('hidden');
+            }
+        }
+        checkSession();
+
+        // Login Handler
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const u = document.getElementById('username').value.trim();
             const p = document.getElementById('password').value.trim();
 
             if (u === ADMIN_USER && p === ADMIN_PASS) {
-                loginCard.classList.add('hidden');
-                dashboardCard.classList.remove('hidden');
-                loginError.classList.add('hidden');
+                sessionStorage.setItem("snec_admin_auth", "true");
+                checkSession();
+                loginForm.reset();
             } else {
-                loginError.innerText = "യൂസർനെയിമോ പാസ്‌വേഡോ തെറ്റാണ്!";
-                loginError.classList.remove('hidden');
+                showModal('error', 'Authentication Failed', 'Invalid username or password entered.');
             }
         });
 
+        // Instant Logout Handler (No Manual Refresh Needed)
         logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem("snec_admin_auth");
+            localStorage.clear();
             dashboardCard.classList.add('hidden');
             loginCard.classList.remove('hidden');
             loginForm.reset();
         });
 
+        // Add Book Handler
         addBookForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('bookName').value;
@@ -136,7 +214,7 @@
             const saveBtn = document.getElementById('saveBtn');
 
             saveBtn.disabled = true;
-            saveBtn.innerText = "സേവ് ചെയ്യുന്നു...";
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
             try {
                 await addDoc(collection(db, "books"), {
@@ -146,21 +224,36 @@
                     createdAt: new Date()
                 });
 
-                successMsg.innerText = "പുസ്തകം വിജയകരമായി സേവ് ചെയ്തു!";
-                successMsg.classList.remove('hidden');
+                showModal('success', 'Success!', 'Book has been successfully added to the database.');
                 addBookForm.reset();
-                
-                setTimeout(() => {
-                    successMsg.classList.add('hidden');
-                }, 3000);
             } catch (err) {
                 console.error(err);
-                alert("എറർ സംഭവിച്ചു!");
+                showModal('error', 'Database Error', 'Failed to save the book. Please try again.');
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.innerText = "സേവ് ചെയ്യുക";
+                saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Book';
             }
         });
+
+        window.showModal = function(type, title, desc) {
+            const modal = document.getElementById('customModal');
+            const icon = document.getElementById('modalIcon');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+
+            if (type === 'success') {
+                icon.className = "w-14 h-14 bg-emerald-50 text-[#05c46b] rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner";
+                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+            } else {
+                icon.className = "w-14 h-14 bg-rose-50 text-[#fc5c65] rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner";
+                icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            }
+            modal.classList.remove('hidden');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
