@@ -29,7 +29,7 @@
 
             <form id="bookForm" class="space-y-4 text-left">
                 <div>
-                    <input type="text" id="bookCode" placeholder="Enter book code" required
+                    <input type="text" id="bookCode" placeholder="Enter book code" required autocomplete="off"
                         class="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-[20px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#4b7bec] focus:bg-white transition font-semibold text-center tracking-wider text-sm">
                 </div>
                 <button type="submit" id="submitBtn"
@@ -129,21 +129,6 @@
         }
         checkSession();
 
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const nextId = input.getAttribute('data-next');
-                    if (nextId) {
-                        const nextEl = document.getElementById(nextId);
-                        if (nextEl) nextEl.focus();
-                    } else if (input.id === 'bookCode') {
-                        bookForm.requestSubmit();
-                    }
-                }
-            });
-        });
-
         bookForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const inputVal = codeInput.value.trim();
@@ -178,12 +163,14 @@
                     showModal('error', 'Book Not Found', 'No book exists with code: ' + code);
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Submit';
+                    codeInput.value = '';
                 }
             } catch (error) {
                 console.error("Error: ", error);
                 showModal('error', 'Connection Error', 'Failed to search. Please check your internet or Firebase Rules.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Submit';
+                codeInput.value = '';
             }
         });
 
