@@ -157,6 +157,8 @@
                 if (!querySnapshot.empty) {
                     querySnapshot.forEach((doc) => {
                         const bookData = doc.data();
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Submit';
                         window.location.href = bookData.bookLink;
                     });
                 } else {
