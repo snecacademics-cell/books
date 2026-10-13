@@ -365,24 +365,16 @@
                 }
 
                 let index = 1;
-                let lastDept = '';
                 
                 querySnapshot.forEach((docSnap) => {
                     const book = docSnap.data();
                     const docId = docSnap.id;
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-                    
-                    let deptDisplay = book.department || 'N/A';
-                    if (deptDisplay === lastDept) {
-                        deptDisplay = '<span class="text-slate-300 ml-2">↳</span>';
-                    } else {
-                        lastDept = book.department || 'N/A';
-                    }
 
                     tr.innerHTML = `
                         <td class="p-3 font-bold text-center text-slate-500">${index++}</td>
-                        <td class="p-3 font-semibold text-slate-800">${deptDisplay}</td>
+                        <td class="p-3 font-semibold text-slate-800">${book.department || 'N/A'}</td>
                         <td class="p-3 font-bold text-slate-900">${book.bookCode}</td>
                         <td class="p-3 font-medium text-slate-700">${book.bookName}</td>
                         <td class="p-3 text-blue-600 truncate max-w-[130px]"><a href="${book.bookLink}" target="_blank" class="hover:underline">${book.bookLink}</a></td>
